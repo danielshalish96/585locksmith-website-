@@ -312,6 +312,10 @@
                 <input type="tel" name="phone" required="true" value="{{ form.phone }}" onChange="{{ onFieldChange }}" style="width:100%;background:var(--navy-3);border:1px solid var(--line);color:var(--cream);padding:13px 14px;border-radius:8px;font-size:15px;font-family:inherit;">
               </label>
               <label style="display:block;">
+                <span style="display:block;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:6px;">Zip Code <span style="color:var(--muted);font-weight:400;">(optional, helps us estimate accurately)</span></span>
+                <input type="text" name="zip" inputmode="numeric" pattern="[0-9]*" maxlength="10" value="{{ form.zip }}" onChange="{{ onFieldChange }}" style="width:100%;background:var(--navy-3);border:1px solid var(--line);color:var(--cream);padding:13px 14px;border-radius:8px;font-size:15px;font-family:inherit;">
+              </label>
+              <label style="display:block;">
                 <span style="display:block;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:6px;">Service Needed</span>
                 <select name="service" value="{{ form.service }}" onChange="{{ onFieldChange }}" style="width:100%;background:var(--navy-3);border:1px solid var(--line);color:var(--cream);padding:13px 14px;border-radius:8px;font-size:15px;font-family:inherit;">
                   <option value="">Select a service</option>
@@ -374,7 +378,7 @@ class Component extends DCLogic {
   state = {
     mobileMenuOpen: false,
     isMobile: false,
-    form: { name: '', phone: '', service: '', message: '' },
+    form: { name: '', phone: '', zip: '', service: '', message: '' },
     formSubmitting: false,
     formSubmitted: false,
     formError: false,
@@ -405,11 +409,11 @@ class Component extends DCLogic {
     e.preventDefault();
     if (this.state.formSubmitting) return;
     this.setState({ formSubmitting: true, formError: false });
-    const { name, phone, service, message } = this.state.form;
+    const { name, phone, zip, service, message } = this.state.form;
     fetch('https://formspree.io/f/mjgndvyp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ name, phone, service, message }),
+      body: JSON.stringify({ name, phone, zip, service, message }),
     })
       .then((res) => {
         if (res.ok) {
