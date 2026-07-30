@@ -334,6 +334,9 @@
                 </sc-if>
                 {{ submitLabel }}
               </button>
+              <sc-if value="{{ formError }}" hint-placeholder-val="{{ false }}">
+                <p style="color:var(--danger);font-size:14px;text-align:center;margin:0;">Something went wrong sending your request. Please call us directly at <a href="tel:+15855550123" style="color:var(--danger);font-weight:700;">(585) 555-0123</a>.</p>
+              </sc-if>
             </div>
           </form>
         </sc-if>
@@ -374,6 +377,7 @@ class Component extends DCLogic {
     form: { name: '', phone: '', service: '', message: '' },
     formSubmitting: false,
     formSubmitted: false,
+    formError: false,
   };
 
   componentDidMount() {
@@ -400,10 +404,23 @@ class Component extends DCLogic {
   handleSubmit = (e) => {
     e.preventDefault();
     if (this.state.formSubmitting) return;
-    this.setState({ formSubmitting: true });
-    setTimeout(() => {
-      this.setState({ formSubmitting: false, formSubmitted: true });
-    }, 1400);
+    this.setState({ formSubmitting: true, formError: false });
+    const { name, phone, service, message } = this.state.form;
+    fetch('https://formspree.io/f/mjgndvyp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name, phone, service, message }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          this.setState({ formSubmitting: false, formSubmitted: true });
+        } else {
+          this.setState({ formSubmitting: false, formError: true });
+        }
+      })
+      .catch(() => {
+        this.setState({ formSubmitting: false, formError: true });
+      });
   };
 
   renderVals() {
@@ -426,6 +443,7 @@ class Component extends DCLogic {
       handleSubmit: this.handleSubmit,
       formSubmitting: this.state.formSubmitting,
       formSubmitted: this.state.formSubmitted,
+      formError: this.state.formError,
       showHeroCard: !isMobile,
       heroGridCols: isMobile ? '1fr' : 'minmax(0,1fr) minmax(280px,380px)',
       whyUsGridCols: isMobile ? '1fr' : '1.2fr 1fr',
